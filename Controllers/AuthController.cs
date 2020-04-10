@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using NOWA.Helpers;
 using NOWA.Models;
 using NOWA.Repositories;
@@ -13,15 +14,17 @@ namespace NOWA.Controllers{
     public class AuthController : Controller{
 
         private readonly UserRepository userRepository;
-        public AuthController(UserRepository userRepository)
+        private readonly IConfiguration configuration;
+        public AuthController(UserRepository userRepository, IConfiguration configuration)
         {
             this.userRepository = userRepository;
+            this.configuration = configuration;
         }
 
         [HttpPost]
-        [Route("[action")]
+        [Route("[action]")]
         [AllowAnonymous]
-        public IActionResult Register(User user)
+        public IActionResult Register([FromBody] User user)
         {
 
             // Checking mandatory fields
@@ -29,6 +32,10 @@ namespace NOWA.Controllers{
                 string.IsNullOrEmpty(user.Email))
                 return Json(new SimpleResponser{ Success = false, Message = "It is mandatory to have Name and Email."});
             
+            // Verifying the user does not exists already
+            if(userRepository.UserAlreadyExists(user.Email))
+                return Json(new SimpleResponser { Success = false, Message = "This email is token."});
+
             // Validate the password
             Regex regex = new Regex(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$");
             if(!regex.IsMatch(user.Password))
@@ -40,6 +47,7 @@ namespace NOWA.Controllers{
 
             // Save the user
             userRepository.InsertUser(user);
+            userRepository.Save();
 
             return Json(new SimpleResponser { Success = true, Message = "The user has been created." });
         }
@@ -47,15 +55,23 @@ namespace NOWA.Controllers{
         [HttpPost]
         [Route("[action]")]
         [AllowAnonymous]
-        public IActionResult Login(User user){
+        public IActionResult Login([FromBody] User user){
+
+            // Checking it has mandatory fields
+            if(string.IsNullOrEmpty(user.Email) ||string.IsNullOrEmpty(user.Password))
+                return Json(new SimpleResponser {Success = false, Message = "Email and Password are necessary."});
 
             // Checking the user exists in the database
+            user.Password = CryptoHelper.GenerateSHA512String(user.Password);
+            if(!userRepository.UserCredentialsAreCorrect(user.Email, user.Password))
+                return Json(new SimpleResponser {Success = false, Message = "Credentials are not correct."});
             
+
             // Create the token based in the complete user info
+            string JWT = JWTHelper.CreateToken(user, configuration);
 
             // Return the token
-
-            return null;
+            return Json(new ComplexResponser<string> {Success = true, Message = "User loged.", Content = JWT});
         }
     }
 }

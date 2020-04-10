@@ -8,7 +8,7 @@
 		- Microsoft.EntityFrameworkCore.Design
 		- Npgsql.EntityFrameworkCore.PostgreSQL
 		- Microsoft.AspNetCore.Authentication.JwtBearer --version 3.0.0
-
+		- JWT --version 6.1.4
 # Add user secrets
 
 	- dotnet user-secrets init

@@ -28,3 +28,12 @@
 /home/noma/workspace/NOWA/obj/Debug/netcoreapp3.1/NOWA.dll
 /home/noma/workspace/NOWA/obj/Debug/netcoreapp3.1/NOWA.pdb
 /home/noma/workspace/NOWA/obj/Debug/netcoreapp3.1/NOWA.genruntimeconfig.cache
+/home/noma/workspace/NOWA/bin/Debug/netcoreapp3.1/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/home/noma/workspace/NOWA/bin/Debug/netcoreapp3.1/Microsoft.IdentityModel.JsonWebTokens.dll
+/home/noma/workspace/NOWA/bin/Debug/netcoreapp3.1/Microsoft.IdentityModel.Logging.dll
+/home/noma/workspace/NOWA/bin/Debug/netcoreapp3.1/Microsoft.IdentityModel.Protocols.dll
+/home/noma/workspace/NOWA/bin/Debug/netcoreapp3.1/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/home/noma/workspace/NOWA/bin/Debug/netcoreapp3.1/Microsoft.IdentityModel.Tokens.dll
+/home/noma/workspace/NOWA/bin/Debug/netcoreapp3.1/Newtonsoft.Json.dll
+/home/noma/workspace/NOWA/bin/Debug/netcoreapp3.1/System.IdentityModel.Tokens.Jwt.dll
+/home/noma/workspace/NOWA/bin/Debug/netcoreapp3.1/JWT.dll

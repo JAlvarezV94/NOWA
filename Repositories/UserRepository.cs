@@ -31,6 +31,16 @@ namespace NOWA.Repositories
             return context.User.ToList();
         }
 
+        public bool UserAlreadyExists(string email)
+        {
+            return context.User.Where(u => u.Email == email).Any();
+        }
+
+        public bool UserCredentialsAreCorrect(string email, string password)
+        {
+            return context.User.Where(u => u.Email == email && u.Password == password).Any();
+        }
+
         // TODO
         public void UpdateUser(User userToUpdate)
         {

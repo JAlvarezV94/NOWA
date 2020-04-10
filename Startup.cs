@@ -21,6 +21,7 @@ namespace NOWA
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
         private string connectionString;
 
         public Startup(IConfiguration configuration)
@@ -30,8 +31,6 @@ namespace NOWA
             connectionString = Configuration.GetConnectionString("Development");
             connectionString = connectionString.Replace("#password#", Configuration["Connection:Password"]);
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -57,6 +56,7 @@ namespace NOWA
                 };
             });
 
+            services.AddSingleton<IConfiguration>(Configuration);
             services.AddScoped<UserRepository>();
         }
 
@@ -71,6 +71,7 @@ namespace NOWA
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
