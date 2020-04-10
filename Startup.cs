@@ -1,21 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Logging;
 using NOWA.Models;
 using NOWA.Repositories;
+using NOWA.ConfigurationModels;
 
 namespace NOWA
 {
@@ -40,7 +34,7 @@ namespace NOWA
             services.AddDbContext<NOWAContext>(options => options.UseNpgsql(connectionString));
 
             var key = Encoding.ASCII.GetBytes(Configuration["Crypto:Secret"]);
-
+        
             services.AddAuthentication(x => {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -56,7 +50,7 @@ namespace NOWA
                 };
             });
 
-            services.AddSingleton<IConfiguration>(Configuration);
+            services.Configure<AuthOptions>(Configuration.GetSection("Crypto"));
             services.AddScoped<UserRepository>();
         }
 

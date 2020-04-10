@@ -1,7 +1,8 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using NOWA.ConfigurationModels;
 using NOWA.Helpers;
 using NOWA.Models;
 using NOWA.Repositories;
@@ -14,11 +15,11 @@ namespace NOWA.Controllers{
     public class AuthController : Controller{
 
         private readonly UserRepository userRepository;
-        private readonly IConfiguration configuration;
-        public AuthController(UserRepository userRepository, IConfiguration configuration)
+        private readonly IOptions<AuthOptions> authOptions;
+        public AuthController(UserRepository userRepository, IOptions<AuthOptions> authOptions)
         {
             this.userRepository = userRepository;
-            this.configuration = configuration;
+            this.authOptions = authOptions;
         }
 
         [HttpPost]
@@ -40,6 +41,8 @@ namespace NOWA.Controllers{
             Regex regex = new Regex(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$");
             if(!regex.IsMatch(user.Password))
                 return Json(new SimpleResponser{ Success = false, Message = "Password should contain 8 character long and at least one number."});
+
+            // TODO: Validate the email
 
             // Encrypt the password
             user.Password = CryptoHelper.GenerateSHA512String(user.Password);
@@ -66,9 +69,9 @@ namespace NOWA.Controllers{
             if(!userRepository.UserCredentialsAreCorrect(user.Email, user.Password))
                 return Json(new SimpleResponser {Success = false, Message = "Credentials are not correct."});
             
-
+            
             // Create the token based in the complete user info
-            string JWT = JWTHelper.CreateToken(user, configuration);
+            string JWT = JWTHelper.CreateToken(user, authOptions.Value.Secret);
 
             // Return the token
             return Json(new ComplexResponser<string> {Success = true, Message = "User loged.", Content = JWT});
